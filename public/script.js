@@ -41,6 +41,7 @@ searchButton.addEventListener("click", async function (event) {
 
         CurrentWeatherFillUp();
 
+        const ImgSrc = "http://openweathermap.org/img/wn/";
         function populateDivs() {
           const divs = document.querySelectorAll(".weather-forecast-item");
 
@@ -53,6 +54,8 @@ searchButton.addEventListener("click", async function (event) {
             min_temp.innerHTML = `${DayData.temp_min}&#176; C`;
             const max_temp = div.querySelector(".max_temp");
             max_temp.innerHTML = `${DayData.temp_max}&#176; C`;
+            const image = div.querySelector(".w-icon");
+            image.src = `${ImgSrc + DayData.icon}@2x.png`;
           });
         }
 

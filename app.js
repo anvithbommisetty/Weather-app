@@ -83,15 +83,20 @@ app.get("/Forecast", async (req, res) => {
 
     const date_min_max = [];
     let sum = 0;
+    let icon = "";
     list.forEach((el) => {
       temp_max = Math.max(temp_max, el.main.temp_max);
       temp_min = Math.min(temp_min, el.main.temp_min);
       sum += el.main.temp;
+      if (counter % 8 === 4) {
+        icon = el.weather[0].icon;
+      }
       if (counter % 8 == 7) {
         date_min_max.push({
           dt: el.dt_txt.split(" ")[0],
           temp_max,
           temp_min,
+          icon,
         });
         // min_array.push(temp_min);
         // max_array.push(temp_max);
