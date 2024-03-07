@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title></title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="search-container">
+      <form action="" method="get" target="_blank">
+        <input
+          type="text"
+          name="q"
+          id="search-input"
+          placeholder="Enter City"
+        />
+        <button type="submit" id="search-button">
+          <img
+            src="https://www.google.com/images/icons/material/system/2x/search_black_24dp.png"
+            alt="Search"
+          />
+        </button>
+      </form>
+    </div>
+    <div class="current-info">
+      <div class="others" id="current-weather-items">
+        <div>Current-Info</div>
+        <div class="weather-item">
+          <div>Temperature</div>
+          <div class="data">------</div>
+        </div>
+        <div class="weather-item">
+          <div>Humidity</div>
+          <div class="data">------</div>
+        </div>
+        <div class="weather-item">
+          <div>Pressure</div>
+          <div class="data">------</div>
+        </div>
+        <div class="weather-item">
+          <div>Wind Speed</div>
+          <div class="data">------</div>
+        </div>
+      </div>
+    </div>
+    <div class="future-forecast">
+      <div class="weather-forecast" id="weather-forecast">
+        <div class="weather-forecast-item">
+          <div class="day">------</div>
+          <img
+            src="http://openweathermap.org/img/wn/10d@2x.png"
+            alt="weather icon"
+            class="w-icon"
+          />
+          <div class="temp">Min - <span class="min_temp">------</span></div>
+          <div class="temp">Max - <span class="max_temp">------</span></div>
+        </div>
+        <div class="weather-forecast-item">
+          <div class="day">------</div>
+          <img
+            src="http://openweathermap.org/img/wn/10d@2x.png"
+            alt="weather icon"
+            class="w-icon"
+          />
+          <div class="temp">Min - <span class="min_temp">------</span></div>
+          <div class="temp">Max - <span class="max_temp">------</span></div>
+        </div>
+        <div class="weather-forecast-item">
+          <div class="day">------</div>
+          <img
+            src="http://openweathermap.org/img/wn/10d@2x.png"
+            alt="weather icon"
+            class="w-icon"
+          />
+          <div class="temp">Min - <span class="min_temp">------</span></div>
+          <div class="temp">Max - <span class="max_temp">------</span></div>
+        </div>
+        <div class="weather-forecast-item">
+          <div class="day">------</div>
+          <img
+            src="http://openweathermap.org/img/wn/10d@2x.png"
+            alt="weather icon"
+            class="w-icon"
+          />
+          <div class="temp">Min - <span class="min_temp">------</span></div>
+          <div class="temp">Max - <span class="max_temp">------</span></div>
+        </div>
+        <div class="weather-forecast-item">
+          <div class="day">------</div>
+          <img
+            src="http://openweathermap.org/img/wn/10d@2x.png"
+            alt="weather icon"
+            class="w-icon"
+          />
+          <div class="temp">Min - <span class="min_temp">------</span></div>
+          <div class="temp">Max - <span class="max_temp">------</span></div>
+        </div>
+        <div class="today" id="current-temp">
+          <img
+            src="http://openweathermap.org/img/wn/10d@2x.png"
+            alt="weather icon"
+            class="w-icon"
+          />
+          <div class="other">
+            <div class="day">5-Day Forecast</div>
+            <div class="temp">
+              Avg Temp - <span class="avg_temp">------</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js" async defer></script>
+  </body>
+</html>
