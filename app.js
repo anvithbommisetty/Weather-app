@@ -1,5 +1,6 @@
 import express from "express";
 import axios from "axios";
+import cache from "memory-cache"; // Import the memory-cache package
 import dotenv from "dotenv";
 dotenv.config();
 const app = express();
@@ -7,37 +8,31 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.static("public"));
 
+//Middleware function for caching
+function cacheMiddleware(duration) {
+  return (req, res, next) => {
+    const key = "__express__" + req.originalUrl || req.url;
+    const cachedBody = cache.get(key);
+    if (cachedBody) {
+      res.send(cachedBody);
+      return;
+    } else {
+      res.sendResponse = res.send;
+      res.send = (body) => {
+        cache.put(key, body, duration * 1000); // Cache response for specified duration (in milliseconds)
+        res.sendResponse(body);
+      };
+      next();
+    }
+  };
+}
+
 app.get("/", (req, res) => {
   res.sendFile("index.html");
 });
 
-// async function validateCity(req, res, next) {
-//   const cityName = req.query.q;
-
-//   if (!cityName) {
-//     return res.status(400).json({ error: "City name is required" });
-//   }
-
-//   try {
-//     const response = await fetch(
-//       `https://api.openweathermap.org/geo/1.0/direct?q=${encodeURIComponent(
-//         cityName
-//       )}&limit=1&appid=${process.env.CURRENT}`
-//     );
-//     const data = await response.json();
-
-//     if (Array.isArray(data) && data.length > 0) {
-//       // City name is valid, continue to the next middleware or route handler
-//       next();
-//     } else {
-//       return res.status(400).json({ error: "Invalid city name" });
-//     }
-//   } catch (error) {
-//     console.error("Error validating city name:", error);
-//     return res.status(500).json({ error: "Internal Server Error" });
-//   }
-// }
-app.get("/CurrentWeather", async (req, res) => {
+//route to get current weather details
+app.get("/CurrentWeather", cacheMiddleware(1 * 60 * 60), async (req, res) => {
   try {
     const response = await axios.get(
       "https://api.openweathermap.org/data/2.5/weather",
@@ -50,18 +45,27 @@ app.get("/CurrentWeather", async (req, res) => {
       }
     );
     let arr = [];
-    arr.push(response.data.main.temp);
-    arr.push(response.data.main.humidity);
-    arr.push(response.data.main.pressure);
-    arr.push(response.data.wind.speed);
-    res.json({ arr });
+    let data = response.data;
+
+    arr.push(data.main.temp);
+    arr.push(data.main.humidity);
+    arr.push(data.main.pressure);
+    arr.push(data.wind.speed);
+
+    let Farr = [...arr];
+    Farr[0] = ConvertToFarenheit(Farr);
+
+    // console.log(arr, Farr);
+
+    res.json({ C: { arr }, F: { arr: Farr } });
   } catch (error) {
     console.error("Error fetching weather data:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-app.get("/Forecast", async (req, res) => {
+//route to get forecast details
+app.get("/Forecast", cacheMiddleware(1 * 60 * 60), async (req, res) => {
   try {
     const response = await axios.get(
       "https://api.openweathermap.org/data/2.5/forecast",
@@ -109,9 +113,25 @@ app.get("/Forecast", async (req, res) => {
     const avgTemp = parseFloat((sum / counter).toFixed(2));
     // console.log(min_max);
 
+    const inF = [];
+
+    date_min_max.forEach((el) => {
+      inF.push({
+        ...el,
+        temp_max: ConvertToFarenheit(el.temp_max),
+        temp_min: ConvertToFarenheit(el.temp_min),
+      });
+    });
+
     res.json({
-      date_min_max,
-      avgTemp,
+      C: {
+        date_min_max,
+        avgTemp,
+      },
+      F: {
+        date_min_max: inF,
+        avgTemp: ConvertToFarenheit(avgTemp),
+      },
     });
 
     // res.json(response.data);
@@ -124,3 +144,10 @@ app.get("/Forecast", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+//Function to convert celcius to farheniet
+function ConvertToFarenheit(val) {
+  const result = 32 + (parseFloat(val) * 9) / 5;
+
+  return Number(result.toFixed(2));
+}

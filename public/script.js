@@ -1,4 +1,11 @@
 const searchButton = document.getElementById("search-button");
+let isCelsius = true; // Variable to track the current temperature unit
+
+let forecastData, weatherData;
+
+// Add event listener to the toggle button
+const toggleButton = document.getElementById("toggleButton");
+toggleButton.addEventListener("click", toggleTemperature);
 
 searchButton.addEventListener("click", async function (event) {
   event.preventDefault(); // Prevent default form submission
@@ -17,52 +24,17 @@ searchButton.addEventListener("click", async function (event) {
       );
       // Check if both responses are successful
       if (forecastResponse.ok && weatherResponse.ok) {
-        const forecastData = await forecastResponse.json();
-        const weatherData = await weatherResponse.json();
+        forecastData = await forecastResponse.json();
+        weatherData = await weatherResponse.json();
 
         // Now you have the forecastData and weatherData stored in variables
-        console.log("Forecast Data:", forecastData);
-        console.log("Weather Data:", weatherData);
-        console.log(typeof weatherData);
-        const currentWeatherItemsEl = document.getElementById(
-          "current-weather-items"
-        );
+        // console.log("Forecast Data:", forecastData);
+        // console.log("Weather Data:", weatherData);
 
-        function CurrentWeatherFillUp() {
-          const divs = currentWeatherItemsEl.querySelectorAll(".weather-item");
-          divs.forEach((div, index) => {
-            const params = div.querySelector(".data");
-            console.log(weatherData.arr[index]);
-            if (index === 0)
-              params.innerHTML = `${weatherData.arr[index]}&#176; C`;
-            else params.innerHTML = `${weatherData.arr[index]}`;
-          });
-        }
-
-        CurrentWeatherFillUp();
-
-        const ImgSrc = "http://openweathermap.org/img/wn/";
-        function populateDivs() {
-          const divs = document.querySelectorAll(".weather-forecast-item");
-
-          // Loop through each div and populate with corresponding data
-          divs.forEach((div, index) => {
-            const DayData = forecastData.date_min_max[index]; // Get the corresponding data object
-            const date = div.querySelector(".day");
-            date.innerHTML = `${DayData.dt}`;
-            const min_temp = div.querySelector(".min_temp");
-            min_temp.innerHTML = `${DayData.temp_min}&#176; C`;
-            const max_temp = div.querySelector(".max_temp");
-            max_temp.innerHTML = `${DayData.temp_max}&#176; C`;
-            const image = div.querySelector(".w-icon");
-            image.src = `${ImgSrc + DayData.icon}@2x.png`;
-          });
-        }
-
-        populateDivs();
-
-        const avg_temp = document.querySelector(".avg_temp");
-        avg_temp.innerHTML = `${forecastData.avgTemp}&#176; C`;
+        CurrentWeatherFillUp(weatherData.C);
+        ForecastWeatherFillUp(forecastData.C);
+        isCelsius = true;
+        toggleButton.innerText = "Farenheit";
       } else {
         console.error("Invalid city name");
         alert("Please enter a valid cityname");
@@ -75,3 +47,55 @@ searchButton.addEventListener("click", async function (event) {
     alert("Please enter a city name");
   }
 });
+
+// Function to toggle temperature between celcius and farheniet
+function toggleTemperature() {
+  if (isCelsius) {
+    CurrentWeatherFillUp(weatherData.F, "F");
+    ForecastWeatherFillUp(forecastData.F, "F");
+    toggleButton.innerText = "Celcius";
+  } else {
+    ForecastWeatherFillUp(forecastData.C, "C");
+    CurrentWeatherFillUp(weatherData.C, "C");
+    toggleButton.innerText = "Farenheit";
+  }
+  isCelsius = !isCelsius;
+}
+
+//Function to fill current weather data
+function CurrentWeatherFillUp(data, unit = "C") {
+  const currentWeatherItemsEl = document.getElementById(
+    "current-weather-items"
+  );
+  const divs = currentWeatherItemsEl.querySelectorAll(".weather-item");
+  divs.forEach((div, index) => {
+    const params = div.querySelector(".data");
+    console.log(data.arr);
+    if (index === 0) params.innerHTML = `${data.arr[index]}&#176; ${unit}`;
+    else params.innerHTML = `${data.arr[index]}`;
+  });
+}
+
+//base url for weather description images
+const ImgSrc = "http://openweathermap.org/img/wn/";
+
+//Function to fill 5 day forecast
+function ForecastWeatherFillUp(data, unit = "C") {
+  const divs = document.querySelectorAll(".weather-forecast-item");
+  // Loop through each div and populate with corresponding data
+  divs.forEach((div, index) => {
+    const DayData = data.date_min_max[index]; // Get the corresponding data object
+    const date = div.querySelector(".day");
+    date.innerHTML = `${DayData.dt}`;
+    const min_temp = div.querySelector(".min_temp");
+    min_temp.innerHTML = `${DayData.temp_min}&#176; ${unit}`;
+    const max_temp = div.querySelector(".max_temp");
+    max_temp.innerHTML = `${DayData.temp_max}&#176; ${unit}`;
+    const image = div.querySelector(".w-icon");
+    image.src = `${ImgSrc + DayData.icon}@2x.png`;
+  });
+
+  //To fill avg temperature of 5 day forecast
+  const avg_temp = document.querySelector(".avg_temp");
+  avg_temp.innerHTML = `${data.avgTemp}&#176; ${unit}`;
+}
